@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 12px;
+    background-color: #f0f0f0;
+}
+
+#nav {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.navItem {
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    color: black;
+}
+
+.navItem[selected] {
+    background-color: black;
+    color: #f0f0f0;
+}
+
+#domainCard {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.domainButton {
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
