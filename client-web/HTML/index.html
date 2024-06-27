@@ -2,17 +2,67 @@
 <html>
   <head>
     <title>WebNexus</title>
+    <link rel="stylesheet" type="text/css" href="../CSS/style.css" />
   </head>
   <body data-server-no-reload>
+    <div id="nav">
+      <h3 id="navDomain" class="navItem" selected>Ricerca dominio</h3>
+      <h3 id="navUserDomains" class="navItem">Domini registrati</h3>
+      <h3 id="navOrder" class="navItem">Ordini</h3>
+      <h3 id="navSignUp" class="navItem">Registra utente</h3>
+      <h3 id="logout" class="navItem">Esci</h3>
+    </div>
+    
     <div id="domain">
-      <h2>Domains:</h2>
-      <br />
-      <div id="domainsList">
-        
+      <h2>Ricerca Dominio:</h2>
+      <input id="domainName" type="text" placeholder="Nome dominio" />
+      <button id="searchDomainButton">Cerca</button>
+      <div id="domainInfo">
+        <p id="domainInfoText">
+          Dominio: {{domain.id}} - Prezzo: {{domain.price}} - Data di
+          scadenza: {{domain.expiration}} - Stato: {{domain.status}}
+        </p>
+        <br />
+        <div id="domainRegister" style="display: none;">
+          <input id="expirationDate" type="date" placeholder="Data di scadenza" />
+          <input id="cardNumber" type="text" placeholder="Numero carta" />
+          <input id="expDate" type="text" placeholder="Data scadenza" />
+          <input id="cvv" type="text" placeholder="CVV" />
+          <input id="cardFirstName" type="text" placeholder="Nome carta" />
+          <input id="cardLastName" type="text" placeholder="Cognome carta" />
+          <button id="registerDomainButton">Registra</button>
+        </div> 
       </div>
+    </div>
+
+    <div id="userDomains">
+      <h2>Rinnova un dominio:</h2>
+      <input id="renewDomainName" type="text" placeholder="Nome dominio" />
+      <input id="renewDomainDate" type="number" min="0" max="10" placeholder="Anni" />
+      <button id="renewDomainButton">Rinnova</button>
+      <h2>Domini registrati:</h2>
+      <br />
+      <div id="userDomainsList">
+      </div>
+    </div>
+
+    <div id="orders">
+      <h2>Ordini:</h2>
+      <br />
+      <div id="ordersList">
+
+      </div>
+    </div>
+
+    <div id="signUp">
+      <h2>Registra utente:</h2>
+      <br />
+      <input id="name" type="text" placeholder="Nome" />
+      <input id="surname" type="text" placeholder="Cognome" />
+      <input id="email" type="email" placeholder="Email" />
+      <button id="signUpButton">Registrati</button>
     </div>
 
     <script src="../JS/index.js"></script>
   </body>
-
 </html>
