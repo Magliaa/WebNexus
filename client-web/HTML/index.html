@@ -18,20 +18,15 @@
       <input id="domainName" type="text" placeholder="Nome dominio" />
       <button id="searchDomainButton">Cerca</button>
       <div id="domainInfo">
-        <p id="domainInfoText">
-          Dominio: {{domain.id}} - Prezzo: {{domain.price}} - Data di
-          scadenza: {{domain.expiration}} - Stato: {{domain.status}}
-        </p>
-        <br />
-        <div id="domainRegister" style="display: none;">
-          <input id="expirationDate" type="date" placeholder="Data di scadenza" />
-          <input id="cardNumber" type="text" placeholder="Numero carta" />
-          <input id="expDate" type="text" placeholder="Data scadenza" />
-          <input id="cvv" type="text" placeholder="CVV" />
-          <input id="cardFirstName" type="text" placeholder="Nome carta" />
-          <input id="cardLastName" type="text" placeholder="Cognome carta" />
-          <button id="registerDomainButton">Registra</button>
-        </div> 
+      </div>
+      <br/>
+      <div id="domainRegister" style="display: none;">
+        <input id="registerTime" type="number" max=10 min=0 placeholder="Anni di registrazione"/>
+        <input id="cardNumber" type="text" placeholder="Numero carta" />
+        <input id="cvv" type="text" placeholder="CVV" />
+        <input id="cardFirstName" type="text" placeholder="Nome carta" />
+        <input id="cardLastName" type="text" placeholder="Cognome carta" />
+        <button id="registerDomainButton">Registra</button>
       </div>
     </div>
 
