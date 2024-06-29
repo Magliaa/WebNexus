@@ -9,90 +9,19 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
 
 import static it.unimib.sd2024.DBHandler.*;
 
-/**
- * Rappresenta la risorsa "example" in "http://localhost:8080/example".
- */
-
-/**
- GET: /domains/
- GET: /user-detail/{uid}/
- GET: /orders/
- POST: /buy-domain/ ->
- Body: {
- user: {
- firstName,
- lastName,
- email
- },
- creditCard: {
- cardNumber,
- expirationDate,
- cvv,
- firstName,
- lastName
- }
- }
- POST: /user/ ->
- Body: {
- firstName,
- lastName,
- email
- }
- PUT: /renew-domain/ ->
- Body: {
- id,
- renew_period
- }
- */
 
 @Path("")
 public class ServerAPI {
-
     /**
-     * Implementazione di GET "/domains".
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getDomains() {
-        String response = null;
-        List<String> answer;
-        try {
-            var dbConn = connectToDatabase();
-
-            if (dbConn == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            answer = sendRequest(DBHandler.Command.GET, "domains", List.of("domains"), null, dbConn);
-            if (answer == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            if (answer.getFirst().equals("false")) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            response = answer.get(1);
-            System.out.println(response);
-
-            closeConnection(dbConn);
-        } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());
-            System.err.println(Arrays.toString(e.getStackTrace()));
-        }
-        return Response.ok(response).build();
-    }
-
-    /**
-     * Implementazione di GET "/domains".
+     * Implementazione di GET "/domains/{domainName}".
      */
     @GET
     @Path("/domains/{domainName}")
@@ -107,6 +36,7 @@ public class ServerAPI {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
+            // Fetch domain details
             answer = sendRequest(DBHandler.Command.GET, "domains", List.of("domains", domainName), null, dbConn);
             if (answer == null) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -114,6 +44,62 @@ public class ServerAPI {
 
             if (answer.getFirst().equals("false")) {
                 return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            Jsonb jsonb = JsonbBuilder.create();
+            Domain domain = jsonb.fromJson(answer.get(1), Domain.class);
+
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("domain", domain);
+
+            // Fetch user details if ownershipUserId exists
+            if (domain.ownershipUserId != null) {
+                List<String> userAnswer = sendRequest(DBHandler.Command.GET, "users", List.of("users", domain.ownershipUserId), null, dbConn);
+                if (userAnswer != null && !userAnswer.getFirst().equals("false")) {
+                    Object userData = jsonb.fromJson(userAnswer.get(1), Object.class);
+                    responseData.put("user", userData);
+                }
+            }
+
+            response = jsonb.toJson(responseData);
+            System.out.println(response);
+
+            closeConnection(dbConn);
+        } catch (Exception e) {
+            System.err.println(e.getLocalizedMessage());
+            System.err.println(Arrays.toString(e.getStackTrace()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+        return Response.ok(response).build();
+    }
+
+    /**
+     * Implementazione di GET "/domains/user/{userId}
+     */
+    @GET
+    @Path("domains/user/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response GetUsersDomains(@PathParam("userId") String userId) {
+        String response = null;
+        List<String> answer;
+        try {
+            var dbConn = connectToDatabase();
+
+            if (dbConn == null) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+
+            Jsonb jsonb = JsonbBuilder.create();
+            var result = jsonb.toJson(userId, String.class);
+            System.out.println(result);
+
+            answer = sendRequest(Command.GET_IF, "domains", List.of("domains"), String.valueOf(List.of("ownershipUserId", result)), dbConn);
+            if (answer == null) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+
+            if (answer.getFirst().equals("false")) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
             response = answer.get(1);
@@ -127,49 +113,9 @@ public class ServerAPI {
         return Response.ok(response).build();
     }
 
-    /**
-     * Implementazione di GET "/domains/user/{userId}"
-     */
-    @GET
-    @Path("domains/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response GetUserDomains(@PathParam("userId") String userId) {
-        String response = null;
-        List<String> answer;
-
-        try {
-            var dbConn = connectToDatabase();
-
-            if (dbConn == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            Jsonb jsonb = JsonbBuilder.create();
-            var result = jsonb.toJson(userId, String.class);
-
-            answer = sendRequest(Command.GET_IF, "domains", List.of("domains"), String.valueOf(List.of("userId", result)), dbConn);
-
-            if (answer == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            if (answer.getFirst().equals("false")) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            response = answer.get(1);
-            System.out.println("test" + response);
-
-            closeConnection(dbConn);
-        } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());
-            System.err.println(Arrays.toString(e.getStackTrace()));
-        }
-        return Response.ok(response).build();
-    }
 
     /**
-     * Implementazione di GET "/domains".
+     * Implementazione di GET "/orders/{userId}".
      */
     @GET
     @Path("orders/{userId}")
@@ -208,15 +154,13 @@ public class ServerAPI {
         return Response.ok(response).build();
     }
 
-    /**
-     * Implementazione di GET "/domains".
-     */
+
+    // The RegisterDomain method
     @POST
-    @Path("user/register")
+    @Path("domains/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response RegisterDomain(RegisterPayload payload) {
-        String response = null;
         List<String> answer;
         try {
             var dbConn = connectToDatabase();
@@ -225,6 +169,7 @@ public class ServerAPI {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
+            // Check if user exists
             answer = sendRequest(Command.GET, "users", List.of("users", payload.uid), null, dbConn);
 
             if (answer.getFirst().equals("false")) {
@@ -234,14 +179,32 @@ public class ServerAPI {
             var config = new JsonbConfig().withNullValues(false);
             Jsonb jsonb = JsonbBuilder.create(config);
 
-            var domain = new Domain();
+            // Check if domain exists
+            answer = sendRequest(Command.GET, "domains", List.of("domains", payload.domainName), null, dbConn);
+
+            boolean domainExists = !answer.getFirst().equals("false");
+            Domain domain;
+            if (domainExists) {
+                domain = jsonb.fromJson(answer.get(1), Domain.class);
+                if (domain.ownershipUserId != null) {
+                    return Response.status(Response.Status.CONFLICT).entity("Domain already registered").build();
+                }
+            } else {
+                domain = new Domain();
+                domain.price = 100 * Integer.parseInt(payload.registerTime); // Set default price
+            }
+
             domain.registerDate = LocalDate.now().toString();
             domain.ownershipUserId = payload.uid;
             domain.expirationDate = LocalDate.now().plusYears(Integer.parseInt(payload.registerTime)).toString();
 
             var domainData = jsonb.toJson(domain, Domain.class);
 
-            answer = sendRequest(Command.SET_IF_NOT_EXISTS, "domains", List.of("domains", payload.domainName), domainData, dbConn);
+            if (domainExists) {
+                answer = sendRequest(Command.SET, "domains", List.of("domains", payload.domainName), domainData, dbConn);
+            } else {
+                answer = sendRequest(Command.SET_IF_NOT_EXISTS, "domains", List.of("domains", payload.domainName), domainData, dbConn);
+            }
 
             if (answer.getFirst().equals("false")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -253,33 +216,32 @@ public class ServerAPI {
             order.userId = payload.uid;
             order.cardCvv = payload.cvv;
             order.domain = payload.domainName;
-            order.cardExpireDate = payload.expDate;
+            order.cardExpireDate = LocalDate.now().plusYears(Integer.parseInt(payload.registerTime)).toString();
             order.cardId = payload.cardNumber;
-            order.price = "100";
+            order.price = domain.price;
             order.cardName = payload.cardOwnerName;
             order.cardSurname = payload.cardOwnerSurname;
-
             order.type = "register";
 
             var orderData = jsonb.toJson(order, Order.class);
 
-            answer = sendRequest(Command.SET, "orders", List.of("orders", ""+orderId), orderData, dbConn);
+            answer = sendRequest(Command.SET, "orders", List.of("orders", "" + orderId), orderData, dbConn);
 
             if (answer.getFirst().equals("false")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
-            response = answer.get(1);
-            System.out.println(response);
-
             closeConnection(dbConn);
+
+            // Return 200 status with an empty JSON object
+            return Response.ok("{}").build();
         } catch (Exception e) {
             System.err.println(e.getLocalizedMessage());
             System.err.println(Arrays.toString(e.getStackTrace()));
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        return Response.ok(response).build();
     }
+
 
     /**
      * Implementazione di GET "/domains".
@@ -317,9 +279,6 @@ public class ServerAPI {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
-            response = answer2.get(1);
-            System.out.println(response);
-
             UserSignupResponse signupResponse = new UserSignupResponse();
             signupResponse.uid = String.valueOf(userId);
 
@@ -334,14 +293,12 @@ public class ServerAPI {
         return Response.ok(response).build();
     }
 
-    /**
-     * Implementazione di GET "/domains".
-     */
-    @GET
-    @Path("{userId}")
+
+    @PUT
+    @Path("domains/renew")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response GetUsersDomains(@PathParam("userId") String userId) {
-        String response = null;
+    public Response renewDomain(RenewPayload payload) {
         List<String> answer;
         try {
             var dbConn = connectToDatabase();
@@ -351,23 +308,71 @@ public class ServerAPI {
             }
 
             Jsonb jsonb = JsonbBuilder.create();
-            var result = jsonb.toJson(userId, String.class);
-            System.out.println(result);
 
-            answer = sendRequest(Command.GET_IF, "domains", List.of("domains"), String.valueOf(List.of("ownershipUserId", result)), dbConn);
+            // Check if domain exists
+            answer = sendRequest(Command.GET, "domains", List.of("domains", payload.domainName), null, dbConn);
+
+            System.out.println(answer);
+
+            if (answer.getFirst().equals("false")) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Domain not found").build();
+            }
+
+            Domain domain = jsonb.fromJson(answer.get(1), Domain.class);
+
+            // Check if the domain is owned by the user
+            if (!domain.ownershipUserId.equals(payload.userId)) {
+                return Response.status(Response.Status.FORBIDDEN).entity("User does not own this domain").build();
+            }
+
+            // Calculate the total registration time
+            LocalDate registerDate = LocalDate.parse(domain.registerDate);
+            LocalDate currentExpirationDate = LocalDate.parse(domain.expirationDate);
+            LocalDate newExpirationDate = currentExpirationDate.plusYears(Integer.parseInt(payload.renewTime));
+            long totalYears = ChronoUnit.YEARS.between(registerDate, newExpirationDate);
+
+            System.out.println("anni totali" + totalYears);
+
+            // Check if the total registration time exceeds 10 years
+            if (totalYears > 10) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Total registration time cannot exceed 10 years").build();
+            }
+
+            // Update the expiration date in the domain
+            domain.expirationDate = newExpirationDate.toString();
+            var domainData = jsonb.toJson(domain, Domain.class);
+            answer = sendRequest(Command.SET, "domains", List.of("domains", payload.domainName), domainData, dbConn);
 
             if (answer.getFirst().equals("false")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
 
-            response = answer.get(1);
-            System.out.println(response);
+            // Create a new order
+            var orderId = ordersId.getAndIncrement();
+
+            var order = new Order();
+            order.userId = payload.userId;
+            order.domain = payload.domainName;
+            order.type = "renew";
+            order.price = domain.price; // Assuming the price remains the same
+            order.cardExpireDate = newExpirationDate.toString(); // Assuming the card expiration date is updated
+
+            var orderData = jsonb.toJson(order, Order.class);
+            answer = sendRequest(Command.SET, "orders", List.of("orders", "" + orderId), orderData, dbConn);
+
+            if (answer.getFirst().equals("false")) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
 
             closeConnection(dbConn);
+
+            // Return 200 status with an empty JSON object
+            return Response.ok("{}").build();
         } catch (Exception e) {
             System.err.println(e.getLocalizedMessage());
             System.err.println(Arrays.toString(e.getStackTrace()));
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
-        return Response.ok(response).build();
     }
 }
+

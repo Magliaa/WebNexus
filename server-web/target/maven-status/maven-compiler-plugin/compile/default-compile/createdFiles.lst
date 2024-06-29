@@ -13,6 +13,7 @@ it\unimib\sd2024\objs\UserSignupResponse.class
 it\unimib\sd2024\CorsFilter.class
 it\unimib\sd2024\DBHandler$Command.class
 it\unimib\sd2024\objs\Orders.class
+it\unimib\sd2024\objs\RenewPayload.class
 it\unimib\sd2024\objs\Answer.class
 it\unimib\sd2024\objs\UserRegisterPayload.class
 it\unimib\sd2024\objs\User.class

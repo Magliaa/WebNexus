@@ -7,7 +7,7 @@ public class Order {
     public String cardName;
     public String cardSurname;
     public String domain;
-    public String price;
+    public int price;
     public String type;
     public String userId;
 }

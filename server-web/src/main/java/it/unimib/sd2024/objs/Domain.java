@@ -8,4 +8,5 @@ public class Domain {
     public List<String> history = null;
     public String ownershipUserId;
     public String registerDate = null;
+    public int price = 0;
 }
