@@ -19,7 +19,7 @@
         "domain": "domain1.com",
         "price": "100000000000",
         "type": "register",
-        "userId": "2"
+        "userId": "1"
     },
     "3": {
         "cardCvv": "444",
@@ -30,6 +30,6 @@
         "domain": "domain10.com",
         "price": "100000000000",
         "type": "register",
-        "userId": "3"
+        "userId": "1"
     }
 }
