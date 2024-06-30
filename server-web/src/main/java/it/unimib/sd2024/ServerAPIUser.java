@@ -38,7 +38,10 @@ public class ServerAPIUser {
         String response;
         List<String> answer;
         try {
-            if (payload == null || payload.email == null || payload.email.isEmpty() || payload.name == null || payload.name.isEmpty() || payload.surname == null || payload.surname.isEmpty()) {
+
+            String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";            
+
+            if (payload == null || payload.email == null || payload.email.isEmpty() || payload.email.matches(emailRegex) || payload.name == null || payload.name.isEmpty() || payload.surname == null || payload.surname.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             var dbConn = connectToDatabase();
