@@ -8,12 +8,13 @@
 
 **Parametri**: `domainName` (string): Nome del dominio.
 
-**Header**: -.
+**Header**: -
 
-**Body richiesta**: -.
+**Body richiesta**: -
 
-**Risposta**:  {
+**Risposta**:  
 ```json
+{
     "domain": {
       "domainName": "example.com",
       "expirationDate": "2024-12-31",
@@ -25,15 +26,15 @@
       "surname": "Doe",
       "name": "John "
     }
-  }
+}
 ```
   domain: Dettagli del dominio.
   
   user: Dettagli dell'utente se il dominio è valido e non scaduto.
 
-**Codici di stato restituiti**: 
-    `200 OK`
-    `404 Not Found` -> Se il dominio cercato non esiste.
+**Codici di stato restituiti**:
+ -   `200 OK`
+ -   `404 Not Found` -> Se il dominio cercato non esiste.
 
 
 ## `domains/user/{userId}`
@@ -45,9 +46,9 @@
 **Parametri**: 
 - `userId` (string): ID dell'utente.
 
-**Header**: -.
+**Header**: -
 
-**Body richiesta**: -.
+**Body richiesta**: -
 
 **Risposta**: La risposta è un dizionario di domini in formato JSON, posseduti dall'utente specificato.
 
@@ -63,7 +64,7 @@
 }
 ```
 
-**Codici di stato restituiti**: 
+**Codici di stato restituiti**:\
     `200 OK` -> Se ci sono dati viene tornato il dizionario altrimenti oggetto vuoto
 
 
@@ -75,7 +76,7 @@
 
 **Parametri**: -
 
-**Header**: -.
+**Header**: -
 
 **Body richiesta**: 
 ```json
@@ -92,12 +93,12 @@
 ```
 **Risposta**: {}
 
-**Codice di stato restituiti**
-`200 OK`: Il dominio è stato registrato correttamente. La risposta contiene un oggetto JSON vuoto.
+**Codice di stato restituiti**:
+- `200 OK`: Il dominio è stato registrato correttamente. La risposta contiene un oggetto JSON vuoto.
 
-`404 Not Found`: L'utente non esiste.
+- `404 Not Found`: L'utente non esiste.
 
-`409 Conflict`: Il dominio è già registrato.
+- `409 Conflict`: Il dominio è già registrato.
 
 
 ## `/domains/renew`
@@ -108,7 +109,7 @@
 
 **Parametri**: -
 
-**Header**: -.
+**Header**: -
 
 **Body richiesta**:
 ```json
@@ -122,13 +123,13 @@
 **Risposta**: {}
 
 **Codice di stato Restituiti**:
-`200 OK`: Il dominio è stato rinnovato correttamente. La risposta contiene un oggetto JSON vuoto.
+- `200 OK`: Il dominio è stato rinnovato correttamente. La risposta contiene un oggetto JSON vuoto.
 
-`404 Not Found`: Il dominio non esiste.
+- `404 Not Found`: Il dominio non esiste.
 
-`403 Forbidden`: L'utente non possiede il dominio o è scaduto e non può essere rinnovato.
+- `403 Forbidden`: L'utente non possiede il dominio o è scaduto e non può essere rinnovato.
 
-`400 Bad Request`: Il tempo totale di registrazione supera i 10 anni.
+- `400 Bad Request`: Il tempo totale di registrazione supera i 10 anni.
 
 
 ## `/orders/{userId}`
@@ -140,9 +141,9 @@
 **Parametri**: 
 - `userId` (string): ID dell'utente.
 
-**Header**: -.
+**Header**: -
 
-**Body richiesta**: -.
+**Body richiesta**: -
 
 **Risposta**: 
 La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSON. Se l'utente non ha ordini, viene restituita un oggetto vuoto.
@@ -164,7 +165,7 @@ La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSO
 }
 ```
 
-**Codici di stato restituiti**: 
+**Codici di stato restituiti**:
 - `200 OK`: La richiesta è stata eseguita con successo e la lista degli ordini è restituita nel corpo della risposta.
   
 - `404 Not Found`: L'utente non esiste.
@@ -178,7 +179,7 @@ La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSO
 
 **Parametri**: - 
 
-**Header**: -.
+**Header**: -
 
 **Body richiesta**:
 ```json
@@ -192,8 +193,8 @@ La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSO
 **Risposta**: Oggetto JSON contenente l'id univoco assegnato all'utente.
 
 **Codice di stato restituiti**:
-`200 OK`: L'utente è stato registrato con successo. La risposta contiene l'ID dell'utente registrato in formato JSON.
+- `200 OK`: L'utente è stato registrato con successo. La risposta contiene l'ID dell'utente registrato in formato JSON.
 
-`400 Bad Request`: I dati forniti non sono validi.
+- `400 Bad Request`: I dati forniti non sono validi.
 
-`409 Conflict`: L'email fornita è già registrata.
+- `409 Conflict`: L'email fornita è già registrata.
