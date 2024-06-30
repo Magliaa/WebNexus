@@ -92,6 +92,7 @@
     "cardNumber": "string",
     "cardOwnerName": "string",
     "cardOwnerSurname": "string",
+    "cardExpireDate": "string"
   }
 ```
 **Risposta**: {}
@@ -126,6 +127,7 @@
     "cardNumber": "string",
     "cardOwnerName": "string",
     "cardOwnerSurname": "string",
+    "cardExpireDate": "string"
   }
 ```
 
