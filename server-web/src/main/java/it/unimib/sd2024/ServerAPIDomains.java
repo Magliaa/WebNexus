@@ -380,6 +380,10 @@ public class ServerAPIDomains {
             var order = new Order();
             order.userId = payload.userId;
             order.domain = payload.domainName;
+            order.cardCvv = payload.cvv;
+            order.cardId = payload.cardNumber;
+            order.cardName = payload.cardOwnerName;
+            order.cardSurname = payload.cardOwnerSurname;
             order.type = "renew";
             order.price = domain.price; // Assuming the price remains the same
             order.cardExpireDate = newExpirationDate.toString(); // Assuming the card expiration date is updated
