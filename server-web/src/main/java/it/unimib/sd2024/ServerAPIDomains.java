@@ -1,6 +1,9 @@
 package it.unimib.sd2024;
 
-import it.unimib.sd2024.objs.*;
+import it.unimib.sd2024.objs.Domain;
+import it.unimib.sd2024.objs.Order;
+import it.unimib.sd2024.objs.RegisterPayload;
+import it.unimib.sd2024.objs.RenewPayload;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
@@ -16,16 +19,20 @@ import java.util.List;
 import java.util.Map;
 
 import static it.unimib.sd2024.DBHandler.*;
-import static it.unimib.sd2024.DBHandler.userId;
+import static it.unimib.sd2024.DBHandler.closeConnection;
 
-
-@Path("")
-public class ServerAPI {
+@Path("/domains")
+public class ServerAPIDomains {
     /**
      * Implementazione di GET "/domains/{domainName}".
+     * @param domainName Nome del dominio.
+     * @return 200 con i dettagli del dominio e dell'utente se il dominio è valido.
+     * Se il dominio è scaduto, non ritorna i dettagli dell'utente.
+     * Se il dominio non esiste, ritorna 404.
+     * Se c'è un errore interno, ritorna 500.
      */
     @GET
-    @Path("/domains/{domainName}")
+    @Path("/{domainName}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDomain(@PathParam("domainName") String domainName) {
         String response;
@@ -80,9 +87,14 @@ public class ServerAPI {
 
     /**
      * Implementazione di GET "/domains/user/{userId}
+     * @param userId ID dell'utente
+     * @return 200 con un array di domini se l'utente ha domini.
+     * Se l'utente non esiste, ritorna 404.
+     * Se c'è un errore interno, ritorna 500.
+     * Se l'utente non ha domini, ritorna 200 con un array vuoto.
      */
     @GET
-    @Path("domains/user/{userId}")
+    @Path("/user/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response GetUsersDomains(@PathParam("userId") String userId) {
         String response = null;
@@ -118,51 +130,24 @@ public class ServerAPI {
         return Response.ok(response).build();
     }
 
-
     /**
-     * Implementazione di GET "/orders/{userId}".
+     * Implementazione di POST "/domains/register".
+     * @param payload Payload per registrare un dominio.
+     *                uid: ID dell'utente.
+     *                domainName: Nome del dominio.
+     *                registerTime: Durata della registrazione in anni.
+     *                cvv: CVV della carta di credito.
+     *                cardNumber: Numero della carta di credito.
+     *                cardOwnerName: Nome del proprietario della carta di credito.
+     *                cardOwnerSurname: Cognome del proprietario della carta di credito.
+     *                cardExpireDate: Data di scadenza della carta di credito.
+     * @return 200 se il dominio è stato registrato correttamente.
+     * 404 se l'utente non esiste.
+     * 409 se il dominio è già registrato.
+     * 500 se c'è un errore interno.
      */
-    @GET
-    @Path("orders/{userId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response GetOrders(@PathParam("userId") String userId) {
-        String response = null;
-        List<String> answer;
-        try {
-            var dbConn = connectToDatabase();
-
-            if (dbConn == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            Jsonb jsonb = JsonbBuilder.create();
-            var result = jsonb.toJson(userId, String.class);
-            System.out.println(result);
-
-            answer = sendRequest(Command.GET_IF, "orders", List.of("orders"), String.valueOf(List.of("userId", result)), dbConn);
-            if (answer == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            if (answer.getFirst().equals("false")) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            response = answer.get(1);
-            System.out.println(response);
-
-            closeConnection(dbConn);
-        } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());
-            System.err.println(Arrays.toString(e.getStackTrace()));
-        }
-        return Response.ok(response).build();
-    }
-
-
-    // The RegisterDomain method
     @POST
-    @Path("domains/register")
+    @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response RegisterDomain(RegisterPayload payload) {
@@ -252,62 +237,25 @@ public class ServerAPI {
         }
     }
 
-
     /**
-     * Implementazione di GET "/domains".
+     * Implementazione di PUT "/domains/renew".
+     * @param payload Payload per rinnovare un dominio.
+     *                userId: ID dell'utente.
+     *                domainName: Nome del dominio.
+     *                renewTime: Durata del rinnovo in anni.
+     *                cvv: CVV della carta di credito.
+     *                cardNumber: Numero della carta di credito.
+     *                cardOwnerName: Nome del proprietario della carta di credito.
+     *                cardOwnerSurname: Cognome del proprietario della carta di credito.
+     *                cardExpireDate: Data di scadenza della carta di credito.
+     * @return 200 se il dominio è stato rinnovato correttamente.
+     * 404 se il dominio non esiste.
+     * 403 se l'utente non possiede il dominio o è scaduto e non può essere rinnovato.
+     * 400 se il tempo totale di registrazione supera i 10 anni.
+     * 500 se c'è un errore interno.
      */
-    @POST
-    @Path("user/signup")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response RegisterUser(UserRegisterPayload payload) {
-        String response;
-        List<String> answer;
-        try {
-            var dbConn = connectToDatabase();
-
-            if (dbConn == null) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-            }
-
-            Jsonb jsonb = JsonbBuilder.create();
-            var result = jsonb.toJson(payload.email, String.class);
-            System.out.println(result);
-
-            synchronized (DBHandler.class) {
-                answer = sendRequest(Command.GET_IF, "users", List.of("users"), String.valueOf(List.of("email", result)), dbConn);
-
-                if (answer.getFirst().equals("false"))
-                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-
-                if (!answer.get(1).equals("{}"))
-                    return Response.status(Response.Status.CONFLICT).build();
-
-                var userId = DBHandler.userId.getAndAdd(1);
-                var answer2 = sendRequest(Command.SET, "users", List.of("users", "" + userId), jsonb.toJson(payload), dbConn);
-
-                if (answer2.getFirst().equals("false")) {
-                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-                }
-
-                UserSignupResponse signupResponse = new UserSignupResponse();
-                signupResponse.uid = String.valueOf(userId);
-
-                response = jsonb.toJson(signupResponse);
-            }
-
-            closeConnection(dbConn);
-        } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());
-            System.err.println(Arrays.toString(e.getStackTrace()));
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-        return Response.ok(response).build();
-    }
-
-
     @PUT
-    @Path("domains/renew")
+    @Path("/renew")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response renewDomain(RenewPayload payload) {
@@ -344,6 +292,10 @@ public class ServerAPI {
             long totalYears = ChronoUnit.YEARS.between(registerDate, newExpirationDate);
 
             System.out.println("anni totali" + totalYears);
+
+            if (currentExpirationDate.isBefore(LocalDate.now())) {
+                return Response.status(Response.Status.FORBIDDEN).entity("Domain is expired").build();
+            }
 
             // Check if the total registration time exceeds 10 years
             if (totalYears > 10) {
@@ -388,4 +340,3 @@ public class ServerAPI {
         }
     }
 }
-
