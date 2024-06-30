@@ -8,4 +8,5 @@ public class RegisterPayload {
     public String cvv;
     public String cardOwnerName;
     public String cardOwnerSurname;
+    public String cardExpireDate;
 }

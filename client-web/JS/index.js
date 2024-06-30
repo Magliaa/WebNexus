@@ -29,7 +29,8 @@ const buyDomain = async (
   cardNumber,
   cvv,
   cardOwnerName,
-  cardOwnerSurname
+  cardOwnerSurname,
+  cardExpireDate
 ) => {
   const response = await fetch(API_URI + "/domains/register/", {
     method: "POST",
@@ -44,6 +45,7 @@ const buyDomain = async (
       cvv,
       cardOwnerName,
       cardOwnerSurname,
+      cardExpireDate,
     }),
   });
   const data = await response.json();
@@ -75,7 +77,8 @@ const renewDomain = async (
   cardNumber,
   cvv,
   cardOwnerName,
-  cardOwnerSurname
+  cardOwnerSurname,
+  cardExpireDate
 ) => {
   const response = await fetch(API_URI + "/domains/renew", {
     method: "PUT",
@@ -90,6 +93,7 @@ const renewDomain = async (
       cvv,
       cardOwnerName,
       cardOwnerSurname,
+      cardExpireDate,
     }),
   });
   const data = await response.json();
@@ -298,6 +302,7 @@ window.addEventListener("load", () => {
     const cvv = document.getElementById("cvv").value;
     const cardFirstName = document.getElementById("cardFirstName").value;
     const cardLastName = document.getElementById("cardLastName").value;
+    const cardExpireDate = document.getElementById("cardExpiration").value;
 
     if (
       domainName === "" ||
@@ -305,7 +310,8 @@ window.addEventListener("load", () => {
       cvv === "" ||
       cvv.length !== 3 ||
       cardFirstName === "" ||
-      cardLastName === ""
+      cardLastName === "" ||
+      cardExpireDate === ""
     ) {
       alert("Compila tutti i campi");
       return;
@@ -325,7 +331,8 @@ window.addEventListener("load", () => {
       cardNumber,
       cvv,
       cardFirstName,
-      cardLastName
+      cardLastName,
+      cardExpireDate
     )
       .then(() => {
         alert("Dominio acquistato con successo");
@@ -342,6 +349,7 @@ window.addEventListener("load", () => {
     const cvv = document.getElementById("renewCvv").value;
     const cardFirstName = document.getElementById("renewCardFirstName").value;
     const cardLastName = document.getElementById("renewCardLastName").value;
+    const cardExpireDate = document.getElementById("renewCardExpiration").value;
 
     if (
       domainName === "" ||
@@ -350,6 +358,7 @@ window.addEventListener("load", () => {
       cvv === "" ||
       cardFirstName === "" ||
       cardLastName === "" ||
+      cardExpireDate === "" ||
       cvv.length !== 3 ||
       renewTime > 10 ||
       renewTime < 0
@@ -358,7 +367,16 @@ window.addEventListener("load", () => {
       return;
     }
 
-    renewDomain(localStorage.getItem("userUid"), domainName, renewTime, cardNumber, cvv, cardFirstName, cardLastName)
+    renewDomain(
+      localStorage.getItem("userUid"),
+      domainName,
+      renewTime,
+      cardNumber,
+      cvv,
+      cardFirstName,
+      cardLastName,
+      cardExpireDate
+    )
       .then(() => {
         alert("Rinnovo avvenuto correttamente");
         const userDomainsList = document.getElementById("userDomainsList");

@@ -188,6 +188,12 @@ public class ServerAPIDomains {
             if (!Common.isCvvValid(payload.cvv)) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
             }
+            if (payload.cardExpireDate == null || payload.cardExpireDate.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Card expire date is required").build();
+            }
+            if (!Common.isCardExpireDateValid(payload.cardExpireDate)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
+            }
 
             var dbConn = connectToDatabase();
 
@@ -247,7 +253,7 @@ public class ServerAPIDomains {
             order.userId = payload.uid;
             order.cardCvv = payload.cvv;
             order.domain = payload.domainName;
-            order.cardExpireDate = LocalDate.now().plusYears(Integer.parseInt(payload.registerTime)).toString();
+            order.cardExpireDate = payload.cardExpireDate;
             order.cardId = payload.cardNumber;
             order.price = domain.price;
             order.cardName = payload.cardOwnerName;
@@ -322,6 +328,12 @@ public class ServerAPIDomains {
             if (!Common.isCvvValid(payload.cvv)) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
             }
+            if (payload.cardExpireDate == null || payload.cardExpireDate.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Card expire date is required").build();
+            }
+            if (!Common.isCardExpireDateValid(payload.cardExpireDate)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
+            }
 
             var dbConn = connectToDatabase();
 
@@ -386,7 +398,7 @@ public class ServerAPIDomains {
             order.cardSurname = payload.cardOwnerSurname;
             order.type = "renew";
             order.price = domain.price; // Assuming the price remains the same
-            order.cardExpireDate = newExpirationDate.toString(); // Assuming the card expiration date is updated
+            order.cardExpireDate = payload.cardExpireDate;
 
             var orderData = jsonb.toJson(order, Order.class);
             answer = sendRequest(Command.SET, "orders", List.of("orders", "" + orderId), orderData, dbConn);

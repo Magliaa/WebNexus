@@ -8,4 +8,5 @@ public class RenewPayload {
     public String cvv;
     public String cardOwnerName;
     public String cardOwnerSurname;
+    public String cardExpireDate;
 }
