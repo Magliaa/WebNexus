@@ -68,7 +68,15 @@ const userSignUp = async (name, surname, email) => {
 };
 
 // post a /renew-domain permette di rinnovare un dominio
-const renewDomain = async (userId, domainName, renewTime) => {
+const renewDomain = async (
+  userId,
+  domainName,
+  renewTime,
+  cardNumber,
+  cvv,
+  cardOwnerName,
+  cardOwnerSurname
+) => {
   const response = await fetch(API_URI + "/domains/renew", {
     method: "PUT",
     headers: {
@@ -78,6 +86,10 @@ const renewDomain = async (userId, domainName, renewTime) => {
       userId,
       domainName,
       renewTime,
+      cardNumber,
+      cvv,
+      cardOwnerName,
+      cardOwnerSurname,
     }),
   });
   const data = await response.json();
@@ -91,8 +103,8 @@ const createRegisterDomainCard = (name, domain) => {
   const domainCardText = document.createElement("p");
   domainCardText.id = "domainCardText";
   domainCardText.innerText = `Dominio: ${name} - Data di registrazione: ${domain.registerDate} - Data di scadenza: ${domain.expirationDate}`;
-  domainCard.append(domainCardText)
-  return domainCard
+  domainCard.append(domainCardText);
+  return domainCard;
 };
 
 window.addEventListener("load", () => {
@@ -166,8 +178,8 @@ window.addEventListener("load", () => {
     const userDomainsList = document.getElementById("userDomainsList");
 
     getUserDomains(localStorage.getItem("userUid")).then((domains) => {
-      userDomainsList.innerHTML = ''
-      const keys = Object.keys(domains)
+      userDomainsList.innerHTML = "";
+      const keys = Object.keys(domains);
       keys.forEach((key) => {
         const domainCard = createRegisterDomainCard(key, domains[key]);
         userDomainsList.appendChild(domainCard);
@@ -190,10 +202,10 @@ window.addEventListener("load", () => {
 
     getOrders(localStorage.getItem("userUid")).then((orders) => {
       const orderList = document.getElementById("ordersList");
-      orderList.innerHTML = ''
-      const keys = Object.keys(orders)
+      orderList.innerHTML = "";
+      const keys = Object.keys(orders);
       keys.forEach((key) => {
-        const order = orders[key]
+        const order = orders[key];
         const orderCard = document.createElement("div");
         orderCard.id = "orderCard";
         const orderCardText = document.createElement("p");
@@ -204,7 +216,7 @@ window.addEventListener("load", () => {
       });
 
       if (keys.length === 0) {
-        orderList.innerHTML = 'Nessun ordine effettuato!'
+        orderList.innerHTML = "Nessun ordine effettuato!";
       }
     });
   });
@@ -262,19 +274,20 @@ window.addEventListener("load", () => {
 
     getDomainDetail(domainName)
       .then((risp) => {
-        const domain = risp.domain
-        const user = risp.user
-        domainInfo.innerHTML = ''
-        registerForm.style.display = 'none'
+        const domain = risp.domain;
+        const user = risp.user;
+        domainInfo.innerHTML = "";
+        registerForm.style.display = "none";
         if (domain.ownershipUserId) {
           domainInfo.innerText = `\n Il dominio cercato appartiene fino al ${domain.expirationDate} all'utente: ${user.name} ${user.surname} - email: ${user.email}`;
         } else {
           registerForm.style.display = "block";
         }
-      }).catch(() => {
-        domainInfo.innerHTML = ''
+      })
+      .catch(() => {
+        domainInfo.innerHTML = "";
         registerForm.style.display = "block";
-    })
+      });
   });
 
   // gestione del pulsante di registra dominio, (prende tutti i dati dal form e li invia tramite api)
@@ -290,6 +303,7 @@ window.addEventListener("load", () => {
       domainName === "" ||
       cardNumber === "" ||
       cvv === "" ||
+      cvv.length !== 3 ||
       cardFirstName === "" ||
       cardLastName === ""
     ) {
@@ -298,8 +312,10 @@ window.addEventListener("load", () => {
     }
 
     if (registerTime > 10 || registerTime < 0) {
-      alert("Il tempo di registrazione può essere al massimo 10 anni e al minimo 0")
-      return
+      alert(
+        "Il tempo di registrazione può essere al massimo 10 anni e al minimo 0"
+      );
+      return;
     }
 
     buyDomain(
@@ -311,42 +327,53 @@ window.addEventListener("load", () => {
       cardFirstName,
       cardLastName
     )
-    .then(() => {
-      alert("Dominio acquistato con successo");
-    })
-    .catch(() => {
-      alert("Errore durante l'acquisto");
-    });
+      .then(() => {
+        alert("Dominio acquistato con successo");
+      })
+      .catch(() => {
+        alert("Errore durante l'acquisto");
+      });
   });
 
   renewDomainButton.addEventListener("click", () => {
-    const domainName = document.getElementById("renewDomainName").value
-    const renewTime = document.getElementById("renewDomainDate").value
+    const domainName = document.getElementById("renewDomainName").value;
+    const renewTime = document.getElementById("renewDomainDate").value;
+    const cardNumber = document.getElementById("renewCardNumber").value;
+    const cvv = document.getElementById("renewCvv").value;
+    const cardFirstName = document.getElementById("renewCardFirstName").value;
+    const cardLastName = document.getElementById("renewCardLastName").value;
 
-    if (domainName === '' || renewTime === '' || renewTime > 10 || renewTime < 0) {
-      alert("Compila i campi correttamente!")
-      return
+    if (
+      domainName === "" ||
+      renewTime === "" ||
+      cardNumber === "" ||
+      cvv === "" ||
+      cardFirstName === "" ||
+      cardLastName === "" ||
+      cvv.length !== 3 ||
+      renewTime > 10 ||
+      renewTime < 0
+    ) {
+      alert("Compila i campi correttamente!");
+      return;
     }
 
-    renewDomain(
-        localStorage.getItem("userUid"),
-        domainName,
-        renewTime
-    ).then(() => {
-      alert("Rinnovo avvenuto correttamente")
-      const userDomainsList = document.getElementById("userDomainsList");
+    renewDomain(localStorage.getItem("userUid"), domainName, renewTime, cardNumber, cvv, cardFirstName, cardLastName)
+      .then(() => {
+        alert("Rinnovo avvenuto correttamente");
+        const userDomainsList = document.getElementById("userDomainsList");
 
-      getUserDomains(localStorage.getItem("userUid")).then((domains) => {
-        userDomainsList.innerHTML = ''
-        const keys = Object.keys(domains)
-        keys.forEach((key) => {
-          const domainCard = createRegisterDomainCard(key, domains[key]);
-          userDomainsList.appendChild(domainCard);
+        getUserDomains(localStorage.getItem("userUid")).then((domains) => {
+          userDomainsList.innerHTML = "";
+          const keys = Object.keys(domains);
+          keys.forEach((key) => {
+            const domainCard = createRegisterDomainCard(key, domains[key]);
+            userDomainsList.appendChild(domainCard);
+          });
         });
+      })
+      .catch(() => {
+        alert("Errore durante il rinnovo del dominio!");
       });
-    }).catch(() => {
-      alert("Errore durante il rinnovo del dominio!")
-    })
-  })
-
+  });
 });
