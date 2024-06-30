@@ -23,7 +23,7 @@ public class Orders {
                 "domain": "domain1.com",
                 "price": 10000,
                 "type": "register",
-                "userId": "1"
+                "userId": "2"
             },
             "3": {
                 "cardCvv": "444",
@@ -34,7 +34,7 @@ public class Orders {
                 "domain": "domain10.com",
                 "price": 100000,
                 "type": "register",
-                "userId": "1"
+                "userId": "3"
             }
         }
     """;

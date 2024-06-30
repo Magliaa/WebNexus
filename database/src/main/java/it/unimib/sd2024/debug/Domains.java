@@ -16,13 +16,10 @@ public class Domains {
                 "price": "200"
             },
             "domain10.com": {
-                "ownershipUserId": "10",
+                "ownershipUserId": "3",
                 "registerDate": "2022-06-27",
                 "expirationDate": "2025-06-27",
                 "price": "300"
-            },
-            "domain2.com": {
-                "price": "400"
             }
         }
     """;
