@@ -1,11 +1,14 @@
 # Progetto Sistemi Distribuiti 2023-2024
 
-Lo scheletro espone la struttura che il progetto deve seguire. Al posto di questo paragrafo è necessario scrivere il nome del progetto e una breve descrizione.
+Progetto: WebNexus
+Descrizione: Il database utilizza il pattern strategy per permettere di inserire nuove operazioni facilmente.
+Il client è sviluppato simulando una Single Page Application, la prima fase di iterazione consiste nella registrazione di un utente, nel momento in cui la registrazione va a buon fine viene assegnato un id univoco all'utente (che viene memorizzato nei localStorage del dispositivo e rimossi solo nel caso di logout in modo che rimanga effettuato l'accesso), successivamente alla registrazione si può ricercare un dominio e nel caso sia libero registrarlo, visualizzare la lista dei domini registrati e rinnovarli e visualizzare la lista di tutti gli ordini effettuati.
+Il client e il server comunicano tramite chiamate REST.
 
 ## Componenti del gruppo
 
-* Nome Cognome (Matricola) <email@campus.unimib.it>
-* ...
+* Theofilia Jessica (894476) <t.jessica@campus.unimib.it>
+* Andrea Magliani (894395) <a.magliani@campus.unimib.it>
 
 ## Compilazione ed esecuzione
 
