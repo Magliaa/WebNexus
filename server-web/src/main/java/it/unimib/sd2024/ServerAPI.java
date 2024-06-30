@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static it.unimib.sd2024.DBHandler.*;
+import static it.unimib.sd2024.DBHandler.userId;
 
 
 @Path("")
@@ -27,7 +28,7 @@ public class ServerAPI {
     @Path("/domains/{domainName}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDomain(@PathParam("domainName") String domainName) {
-        String response = null;
+        String response;
         List<String> answer;
         try {
             var dbConn = connectToDatabase();
@@ -52,8 +53,12 @@ public class ServerAPI {
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("domain", domain);
 
+            LocalDate dateToCheck = LocalDate.parse(domain.expirationDate);
+            LocalDate currentDate = LocalDate.now();
+            boolean isExpired = dateToCheck.isBefore(currentDate);
+
             // Fetch user details if ownershipUserId exists
-            if (domain.ownershipUserId != null) {
+            if (domain.ownershipUserId != null && !isExpired) {
                 List<String> userAnswer = sendRequest(DBHandler.Command.GET, "users", List.of("users", domain.ownershipUserId), null, dbConn);
                 if (userAnswer != null && !userAnswer.getFirst().equals("false")) {
                     Object userData = jsonb.fromJson(userAnswer.get(1), Object.class);
@@ -184,11 +189,16 @@ public class ServerAPI {
 
             boolean domainExists = !answer.getFirst().equals("false");
             Domain domain;
+            String oldDomainData = null;
             if (domainExists) {
                 domain = jsonb.fromJson(answer.get(1), Domain.class);
-                if (domain.ownershipUserId != null) {
+                LocalDate dateToCheck = LocalDate.parse(domain.expirationDate);
+                LocalDate currentDate = LocalDate.now();
+                boolean isExpired = dateToCheck.isBefore(currentDate);
+                if (domain.ownershipUserId != null && !isExpired) {
                     return Response.status(Response.Status.CONFLICT).entity("Domain already registered").build();
                 }
+                oldDomainData = domain.expirationDate;
             } else {
                 domain = new Domain();
                 domain.price = 100 * Integer.parseInt(payload.registerTime); // Set default price
@@ -200,8 +210,8 @@ public class ServerAPI {
 
             var domainData = jsonb.toJson(domain, Domain.class);
 
-            if (domainExists) {
-                answer = sendRequest(Command.SET, "domains", List.of("domains", payload.domainName), domainData, dbConn);
+            if (domainExists && oldDomainData != null) {
+                answer = sendRequest(Command.SET_IF, "domains", List.of("domains", payload.domainName), String.valueOf(List.of(domainData, "expirationDate", oldDomainData)), dbConn);
             } else {
                 answer = sendRequest(Command.SET_IF_NOT_EXISTS, "domains", List.of("domains", payload.domainName), domainData, dbConn);
             }
@@ -251,7 +261,7 @@ public class ServerAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response RegisterUser(UserRegisterPayload payload) {
-        String response = null;
+        String response;
         List<String> answer;
         try {
             var dbConn = connectToDatabase();
@@ -264,25 +274,27 @@ public class ServerAPI {
             var result = jsonb.toJson(payload.email, String.class);
             System.out.println(result);
 
-            answer = sendRequest(Command.GET_IF, "users", List.of("users"), String.valueOf(List.of("email", result)), dbConn);
+            synchronized (DBHandler.class) {
+                answer = sendRequest(Command.GET_IF, "users", List.of("users"), String.valueOf(List.of("email", result)), dbConn);
 
-            if (answer.getFirst().equals("false"))
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                if (answer.getFirst().equals("false"))
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 
-            if (!answer.get(1).equals("{}"))
-                return Response.status(Response.Status.CONFLICT).build();
+                if (!answer.get(1).equals("{}"))
+                    return Response.status(Response.Status.CONFLICT).build();
 
-            var userId = id.getAndAdd(1);
-            var answer2 = sendRequest(Command.SET_IF_NOT_EXISTS, "users", List.of("users", ""+userId), jsonb.toJson(payload), dbConn);
+                var userId = DBHandler.userId.getAndAdd(1);
+                var answer2 = sendRequest(Command.SET, "users", List.of("users", "" + userId), jsonb.toJson(payload), dbConn);
 
-            if (answer2.getFirst().equals("false")) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                if (answer2.getFirst().equals("false")) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                }
+
+                UserSignupResponse signupResponse = new UserSignupResponse();
+                signupResponse.uid = String.valueOf(userId);
+
+                response = jsonb.toJson(signupResponse);
             }
-
-            UserSignupResponse signupResponse = new UserSignupResponse();
-            signupResponse.uid = String.valueOf(userId);
-
-            response = jsonb.toJson(signupResponse);
 
             closeConnection(dbConn);
         } catch (Exception e) {
@@ -339,9 +351,10 @@ public class ServerAPI {
             }
 
             // Update the expiration date in the domain
+            String oldExpirationDate = domain.expirationDate;
             domain.expirationDate = newExpirationDate.toString();
             var domainData = jsonb.toJson(domain, Domain.class);
-            answer = sendRequest(Command.SET, "domains", List.of("domains", payload.domainName), domainData, dbConn);
+            answer = sendRequest(Command.SET_IF, "domains", List.of("domains", payload.domainName), String.valueOf(List.of(domainData, "expirationDate", oldExpirationDate)), dbConn);
 
             if (answer.getFirst().equals("false")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
