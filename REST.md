@@ -122,7 +122,12 @@
   {
     "userId": "string",
     "domainName": "string",
-    "renewTime": "string"
+    "renewTime": "string",
+    "cvv": "string",
+    "cardNumber": "string",
+    "cardOwnerName": "string",
+    "cardOwnerSurname": "string",
+    "cardExpireDate": "string"
   }
 ```
 
