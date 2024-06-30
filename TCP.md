@@ -115,7 +115,7 @@ Risposta:
 - ["false", messaggio d'errore (Stringa)] se il documento non è stato ottenuto correttamente
 ```
 
-__Remove - Comando per rimuovere un documento da una collezione.__
+__REMOVE - Comando per rimuovere un documento da una collezione.__
 ```
 remove collection ; keys ;
 ```
