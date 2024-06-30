@@ -1,7 +1,7 @@
 # Progetto Sistemi Distribuiti 2023-2024 - TCP
 
 ## Definizione di elementi comuni a tutti i comandi
-### Collezione
+### Collezione (collection)
 Una collezione è un insieme di documenti.
 Ogni documento è un insieme di coppie chiave-valore. Le chiavi sono stringhe, i valori possono essere stringhe, numeri o booleani o altri documenti.
 
@@ -12,18 +12,18 @@ La collezione deve essere una stringa formata da solo numeri, lettere (Minuscole
 collection1
 ```
 
-### Chiavi
-Le chiavi sono stringhe formate da solo numeri, lettere (Minuscole/Maiuscolo), spazi e ..
+### Chiavi (keys)
+Le chiavi sono stringhe formate da solo numeri, lettere (Minuscole/Maiuscolo), spazi e ".". Più chiavi rappresentano un percorso della posizione del documento.
 
 #### Comando
-Le chiavi deveno essere una stringa formata da solo numeri, lettere (Minuscole/Maiuscolo), spazi e . e ogni chiave è divisa dalla ",".
+Le chiavi devono essere una stringa formata da solo numeri, lettere (Minuscole/Maiuscolo), spazi e "." e ogni chiave è divisa dalla ",".
 
 ##### Esempio
 ```
 key1, key2, ke y3
 ```
 
-### Documento
+### Documento (document)
 Un documento è un insieme di coppie chiave-valore o un elemento con un certo significato. Le chiavi sono stringhe, i valori possono essere stringhe, numeri o booleani o altri documenti, nel nostro caso per documento intendiamo un elemento JSON.
 
 ##### Esempio
@@ -59,7 +59,7 @@ Risposta:
 - ["false", messaggio d'errore (Stringa)] se il documento non è stato aggiunto correttamente
 ```
 
-__SET_IF - Comando per aggiungere un documento a una collezione se all'interno del documento nel database esiste una coppia key : value uguale a key_check : value_check.__
+__SET_IF - Comando per aggiungere un documento a una collezione se all'interno del documento associato alle chiavi nel database esiste una coppia key : value uguale a key_check : value_check.__
 ```
 setif collection ; keys ; [document, key_check, value_check]
 ```
@@ -72,7 +72,7 @@ Risposta:
 - ["false", messaggio d'errore (Stringa)] se il documento non è stato aggiunto correttamente
 ```
 
-__SET_IF_NOT_EXIST - Comando per aggiungere un documento a una collezione se non esiste un documento associato alle keys.__
+__SET_IF_NOT_EXIST - Comando per aggiungere un documento a una collezione se non esiste un documento associato alle chiavi.__
 ```
 setifnotexist collection ; keys ; document
 ```
@@ -102,9 +102,9 @@ Risposta:
 - ["false", messaggio d'errore (Stringa)] se il documento non è stato ottenuto correttamente
 ```
 
-__GET_IF - Comando per ottenere un documento da una collezione se all'interno del documento nel database esiste una coppia key : value uguale a key_check : value_check.__
+__GET_IF - Comando per ottenere un documento da una collezione se all'interno del documento associato alle chiavi nel database esiste una coppia key : value uguale a key_check : value_check.__
 ```
-get collection ; keys ; [key_check, value_check]
+getif collection ; keys ; [key_check, value_check]
 ```
 ```
 Example:
@@ -117,7 +117,7 @@ Risposta:
 
 __Remove - Comando per rimuovere un documento da una collezione.__
 ```
-get collection ; keys ;
+remove collection ; keys ;
 ```
 ```
 Example:
