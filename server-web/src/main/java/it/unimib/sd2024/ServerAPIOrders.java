@@ -30,7 +30,7 @@ public class ServerAPIOrders {
         String response = null;
         List<String> answer;
         try {
-            if (userId == null || userId.isEmpty()) {
+            if (userId == null || userId.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
 

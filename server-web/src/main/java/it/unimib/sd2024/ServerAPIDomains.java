@@ -39,8 +39,12 @@ public class ServerAPIDomains {
         String response;
         List<String> answer;
         try {
-            if (domainName == null || domainName.isEmpty()) {
+            if (domainName == null || domainName.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Domain name is required").build();
+            }
+            domainName = domainName.strip();
+            if (domainName.contains(" ")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Domain name cannot contain spaces").build();
             }
 
             var dbConn = connectToDatabase();
@@ -106,7 +110,7 @@ public class ServerAPIDomains {
         String response = null;
         List<String> answer;
         try {
-            if (userId == null || userId.isEmpty()) {
+            if (userId == null || userId.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("User ID is required").build();
             }
 
@@ -164,22 +168,26 @@ public class ServerAPIDomains {
     public Response RegisterDomain(RegisterPayload payload) {
         List<String> answer;
         try {
-            if (payload.registerTime == null || payload.registerTime.isEmpty()) {
+            if (payload.registerTime == null || payload.registerTime.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Register time is required").build();
             }
             if (Integer.parseInt(payload.registerTime) <= 0) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Register time must be greater than 0").build();
             }
-            if (payload.domainName == null || payload.domainName.isEmpty()) {
+            if (payload.domainName == null || payload.domainName.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Domain name is required").build();
             }
-            if (payload.uid == null || payload.uid.isEmpty()) {
+            payload.domainName = payload.domainName.strip();
+            if (payload.domainName.contains(" ")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Domain name cannot contain spaces").build();
+            }
+            if (payload.uid == null || payload.uid.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("User ID is required").build();
             }
-            if (payload.cardOwnerName == null || payload.cardOwnerName.isEmpty()) {
+            if (payload.cardOwnerName == null || payload.cardOwnerName.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Card owner name is required").build();
             }
-            if (payload.cardOwnerSurname == null || payload.cardOwnerSurname.isEmpty()) {
+            if (payload.cardOwnerSurname == null || payload.cardOwnerSurname.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Card owner surname is required").build();
             }
             if (!Common.isCardNumberValid(payload.cardNumber)) {
@@ -188,7 +196,7 @@ public class ServerAPIDomains {
             if (!Common.isCvvValid(payload.cvv)) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
             }
-            if (payload.cardExpireDate == null || payload.cardExpireDate.isEmpty()) {
+            if (payload.cardExpireDate == null || payload.cardExpireDate.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Card expire date is required").build();
             }
             if (!Common.isCardExpireDateValid(payload.cardExpireDate)) {
@@ -304,22 +312,27 @@ public class ServerAPIDomains {
     public Response renewDomain(RenewPayload payload) {
         List<String> answer;
         try {
-            if (payload.renewTime == null || payload.renewTime.isEmpty()) {
+            if (payload.renewTime == null || payload.renewTime.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Renew time is required").build();
             }
             if (Integer.parseInt(payload.renewTime) <= 0) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Renew time must be greater than 0").build();
             }
-            if (payload.domainName == null || payload.domainName.isEmpty()) {
+            if (payload.domainName == null || payload.domainName.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Domain name is required").build();
             }
-            if (payload.userId == null || payload.userId.isEmpty()) {
+            payload.domainName = payload.domainName.strip();
+            if (payload.domainName.contains(" ")) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Domain name cannot contain spaces").build();
+            }
+
+            if (payload.userId == null || payload.userId.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("User ID is required").build();
             }
-            if (payload.cardOwnerName == null || payload.cardOwnerName.isEmpty()) {
+            if (payload.cardOwnerName == null || payload.cardOwnerName.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Card owner name is required").build();
             }
-            if (payload.cardOwnerSurname == null || payload.cardOwnerSurname.isEmpty()) {
+            if (payload.cardOwnerSurname == null || payload.cardOwnerSurname.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Card owner surname is required").build();
             }
             if (!Common.isCardNumberValid(payload.cardNumber)) {
@@ -328,7 +341,7 @@ public class ServerAPIDomains {
             if (!Common.isCvvValid(payload.cvv)) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
             }
-            if (payload.cardExpireDate == null || payload.cardExpireDate.isEmpty()) {
+            if (payload.cardExpireDate == null || payload.cardExpireDate.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Card expire date is required").build();
             }
             if (!Common.isCardExpireDateValid(payload.cardExpireDate)) {

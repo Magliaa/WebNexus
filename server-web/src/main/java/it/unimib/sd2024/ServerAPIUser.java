@@ -41,7 +41,7 @@ public class ServerAPIUser {
 
             String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";            
 
-            if (payload == null || payload.email == null || payload.email.isEmpty() || !payload.email.matches(emailRegex) || payload.name == null || payload.name.isEmpty() || payload.surname == null || payload.surname.isEmpty()) {
+            if (payload == null || payload.email == null || payload.email.isBlank() || !payload.email.matches(emailRegex) || payload.name == null || payload.name.isBlank() || payload.surname == null || payload.surname.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             var dbConn = connectToDatabase();
