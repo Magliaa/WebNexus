@@ -1,6 +1,7 @@
 # Progetto Sistemi Distribuiti 2023-2024
 
 Progetto: WebNexus
+
 Descrizione: Il database utilizza il pattern strategy per permettere di inserire nuove operazioni facilmente.
 Il client è sviluppato simulando una Single Page Application, la prima fase di iterazione consiste nella registrazione di un utente, nel momento in cui la registrazione va a buon fine viene assegnato un id univoco all'utente (che viene memorizzato nei localStorage del dispositivo e rimossi solo nel caso di logout in modo che rimanga effettuato l'accesso), successivamente alla registrazione si può ricercare un dominio e nel caso sia libero registrarlo, visualizzare la lista dei domini registrati e rinnovarli e visualizzare la lista di tutti gli ordini effettuati.
 Il client e il server comunicano tramite chiamate REST.
