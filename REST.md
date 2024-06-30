@@ -13,6 +13,7 @@
 **Body richiesta**: -.
 
 **Risposta**:  {
+```json
     "domain": {
       "domainName": "example.com",
       "expirationDate": "2024-12-31",
@@ -25,12 +26,14 @@
       "name": "John "
     }
   }
+```
   domain: Dettagli del dominio.
+  
   user: Dettagli dell'utente se il dominio è valido e non scaduto.
 
 **Codici di stato restituiti**: 
-    `200` OK
-    `404` Not Found -> Se il dominio cercato non esiste.
+    `200 OK`
+    `404 Not Found` -> Se il dominio cercato non esiste.
 
 
 ## `domains/user/{userId}`
@@ -61,7 +64,7 @@
 ```
 
 **Codici di stato restituiti**: 
-    `200` OK -> Se ci sono dati viene tornato il dizionario altrimenti oggetto vuoto
+    `200 OK` -> Se ci sono dati viene tornato il dizionario altrimenti oggetto vuoto
 
 
 ## `/domains/register`
@@ -91,7 +94,9 @@
 
 **Codice di stato restituiti**
 `200 OK`: Il dominio è stato registrato correttamente. La risposta contiene un oggetto JSON vuoto.
+
 `404 Not Found`: L'utente non esiste.
+
 `409 Conflict`: Il dominio è già registrato.
 
 
@@ -118,8 +123,11 @@
 
 **Codice di stato Restituiti**:
 `200 OK`: Il dominio è stato rinnovato correttamente. La risposta contiene un oggetto JSON vuoto.
+
 `404 Not Found`: Il dominio non esiste.
+
 `403 Forbidden`: L'utente non possiede il dominio o è scaduto e non può essere rinnovato.
+
 `400 Bad Request`: Il tempo totale di registrazione supera i 10 anni.
 
 
@@ -158,9 +166,9 @@ La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSO
 
 **Codici di stato restituiti**: 
 - `200 OK`: La richiesta è stata eseguita con successo e la lista degli ordini è restituita nel corpo della risposta.
+  
 - `404 Not Found`: L'utente non esiste.
-- `500 Internal Server Error`: Si è verificato un errore interno del server.
-
+  
 
 ## `/user/signup`
 
