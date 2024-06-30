@@ -193,5 +193,7 @@ La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSO
 
 **Codice di stato restituiti**:
 `200 OK`: L'utente è stato registrato con successo. La risposta contiene l'ID dell'utente registrato in formato JSON.
+
 `400 Bad Request`: I dati forniti non sono validi.
+
 `409 Conflict`: L'email fornita è già registrata.
