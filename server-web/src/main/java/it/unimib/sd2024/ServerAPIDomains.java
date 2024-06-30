@@ -27,6 +27,7 @@ public class ServerAPIDomains {
      * Implementazione di GET "/domains/{domainName}".
      * @param domainName Nome del dominio.
      * @return 200 con i dettagli del dominio e dell'utente se il dominio è valido.
+     * Se c'è un problema con i parametri, ritorna 400.
      * Se il dominio è scaduto, non ritorna i dettagli dell'utente.
      * Se il dominio non esiste, ritorna 404.
      * Se c'è un errore interno, ritorna 500.
@@ -38,6 +39,10 @@ public class ServerAPIDomains {
         String response;
         List<String> answer;
         try {
+            if (domainName == null || domainName.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Domain name is required").build();
+            }
+
             var dbConn = connectToDatabase();
 
             if (dbConn == null) {
@@ -89,6 +94,7 @@ public class ServerAPIDomains {
      * Implementazione di GET "/domains/user/{userId}
      * @param userId ID dell'utente
      * @return 200 con un array di domini se l'utente ha domini.
+     * Se l'ID dell'utente non è valido, ritorna 400.
      * Se l'utente non esiste, ritorna 404.
      * Se c'è un errore interno, ritorna 500.
      * Se l'utente non ha domini, ritorna 200 con un array vuoto.
@@ -100,6 +106,10 @@ public class ServerAPIDomains {
         String response = null;
         List<String> answer;
         try {
+            if (userId == null || userId.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("User ID is required").build();
+            }
+
             var dbConn = connectToDatabase();
 
             if (dbConn == null) {
@@ -142,6 +152,7 @@ public class ServerAPIDomains {
      *                cardOwnerSurname: Cognome del proprietario della carta di credito.
      *                cardExpireDate: Data di scadenza della carta di credito.
      * @return 200 se il dominio è stato registrato correttamente.
+     * 400 se i dati non sono validi.
      * 404 se l'utente non esiste.
      * 409 se il dominio è già registrato.
      * 500 se c'è un errore interno.
@@ -153,6 +164,31 @@ public class ServerAPIDomains {
     public Response RegisterDomain(RegisterPayload payload) {
         List<String> answer;
         try {
+            if (payload.registerTime == null || payload.registerTime.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Register time is required").build();
+            }
+            if (Integer.parseInt(payload.registerTime) <= 0) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Register time must be greater than 0").build();
+            }
+            if (payload.domainName == null || payload.domainName.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Domain name is required").build();
+            }
+            if (payload.uid == null || payload.uid.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("User ID is required").build();
+            }
+            if (payload.cardOwnerName == null || payload.cardOwnerName.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Card owner name is required").build();
+            }
+            if (payload.cardOwnerSurname == null || payload.cardOwnerSurname.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Card owner surname is required").build();
+            }
+            if (!Common.isCardNumberValid(payload.cardNumber)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card number").build();
+            }
+            if (!Common.isCvvValid(payload.cvv)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
+            }
+
             var dbConn = connectToDatabase();
 
             if (dbConn == null) {
@@ -249,6 +285,7 @@ public class ServerAPIDomains {
      *                cardOwnerSurname: Cognome del proprietario della carta di credito.
      *                cardExpireDate: Data di scadenza della carta di credito.
      * @return 200 se il dominio è stato rinnovato correttamente.
+     * 400 se i dati non sono validi.
      * 404 se il dominio non esiste.
      * 403 se l'utente non possiede il dominio o è scaduto e non può essere rinnovato.
      * 400 se il tempo totale di registrazione supera i 10 anni.
@@ -261,6 +298,31 @@ public class ServerAPIDomains {
     public Response renewDomain(RenewPayload payload) {
         List<String> answer;
         try {
+            if (payload.renewTime == null || payload.renewTime.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Renew time is required").build();
+            }
+            if (Integer.parseInt(payload.renewTime) <= 0) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Renew time must be greater than 0").build();
+            }
+            if (payload.domainName == null || payload.domainName.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Domain name is required").build();
+            }
+            if (payload.userId == null || payload.userId.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("User ID is required").build();
+            }
+            if (payload.cardOwnerName == null || payload.cardOwnerName.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Card owner name is required").build();
+            }
+            if (payload.cardOwnerSurname == null || payload.cardOwnerSurname.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Card owner surname is required").build();
+            }
+            if (!Common.isCardNumberValid(payload.cardNumber)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card number").build();
+            }
+            if (!Common.isCvvValid(payload.cvv)) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid card expire date").build();
+            }
+
             var dbConn = connectToDatabase();
 
             if (dbConn == null) {
@@ -318,6 +380,10 @@ public class ServerAPIDomains {
             var order = new Order();
             order.userId = payload.userId;
             order.domain = payload.domainName;
+            order.cardCvv = payload.cvv;
+            order.cardId = payload.cardNumber;
+            order.cardName = payload.cardOwnerName;
+            order.cardSurname = payload.cardOwnerSurname;
             order.type = "renew";
             order.price = domain.price; // Assuming the price remains the same
             order.cardExpireDate = newExpirationDate.toString(); // Assuming the card expiration date is updated

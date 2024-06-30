@@ -25,6 +25,7 @@ public class ServerAPIUser {
      *                name: nome dell'utente.
      *                surname: cognome dell'utente.
      * @return id dell'utente registrato, restituisce 200.
+     * Se i dati sono vuoti, restituisce 400.
      * Se l'email è già registrata, restituisce 409.
      * Se c'è un errore interno, restituisce 500.
      * Se i dati non sono validi, restituisce 400.
@@ -37,6 +38,9 @@ public class ServerAPIUser {
         String response;
         List<String> answer;
         try {
+            if (payload == null || payload.email == null || payload.email.isEmpty() || payload.name == null || payload.name.isEmpty() || payload.surname == null || payload.surname.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
             var dbConn = connectToDatabase();
 
             if (dbConn == null) {

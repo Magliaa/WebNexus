@@ -34,6 +34,9 @@
 
 **Codici di stato restituiti**:
  -   `200 OK`
+
+ -   `400 Bad Request` -> Se il dominio è in formato non valido.
+
  -   `404 Not Found` -> Se il dominio cercato non esiste.
 
 
@@ -65,8 +68,9 @@
 ```
 
 **Codici di stato restituiti**:\
-    `200 OK` -> Se ci sono dati viene tornato il dizionario altrimenti oggetto vuoto
+- `200 OK` -> Se ci sono dati viene tornato il dizionario altrimenti oggetto vuoto.
 
+- `400 Bad Request` -> Se l'ID dell'utente non è valido.
 
 ## `/domains/register`
 
@@ -88,13 +92,14 @@
     "cardNumber": "string",
     "cardOwnerName": "string",
     "cardOwnerSurname": "string",
-    "cardExpireDate": "string"
   }
 ```
 **Risposta**: {}
 
 **Codice di stato restituiti**:
 - `200 OK`: Il dominio è stato registrato correttamente. La risposta contiene un oggetto JSON vuoto.
+
+- `400 Bad Request`: I dati forniti non sono validi.
 
 - `404 Not Found`: L'utente non esiste.
 
@@ -116,7 +121,11 @@
   {
     "userId": "string",
     "domainName": "string",
-    "renewTime": "string"
+    "renewTime": "string",
+    "cvv": "string",
+    "cardNumber": "string",
+    "cardOwnerName": "string",
+    "cardOwnerSurname": "string",
   }
 ```
 
@@ -124,6 +133,8 @@
 
 **Codice di stato Restituiti**:
 - `200 OK`: Il dominio è stato rinnovato correttamente. La risposta contiene un oggetto JSON vuoto.
+
+- `400 Bad Request`: I dati forniti non sono validi.
 
 - `404 Not Found`: Il dominio non esiste.
 
@@ -167,7 +178,9 @@ La risposta è un dizionario di ordini dell'utente [key = userId] in formato JSO
 
 **Codici di stato restituiti**:
 - `200 OK`: La richiesta è stata eseguita con successo e la lista degli ordini è restituita nel corpo della risposta.
-  
+
+- `400 Bad Request`: L'ID dell'utente non è valido.
+
 - `404 Not Found`: L'utente non esiste.
   
 
