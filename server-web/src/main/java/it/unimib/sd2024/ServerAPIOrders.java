@@ -18,6 +18,7 @@ public class ServerAPIOrders {
      * Implementazione di GET "/orders/{userId}".
      * @param userId id dell'utente.
      * @return lista degli ordini dell'utente, restituisce 200.
+     * Se l'id dell'utente è vuoto, restituisce 400.
      * Se l'utente non esiste, restituisce 404.
      * Se c'è un errore interno, restituisce 500.
      * Se l'utente non ha ordini, restituisce 200 con una lista vuota.
@@ -29,6 +30,10 @@ public class ServerAPIOrders {
         String response = null;
         List<String> answer;
         try {
+            if (userId == null || userId.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
             var dbConn = connectToDatabase();
 
             if (dbConn == null) {
