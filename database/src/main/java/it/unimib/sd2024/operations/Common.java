@@ -5,6 +5,9 @@ import it.unimib.sd2024.CommandException;
 
 import java.util.List;
 
+/**
+ * Common class to handle the Database.
+ */
 public class Common {
 
     public static JsonObject getJsonObjFromPath(List<String> keys, JsonObject jsonObject) throws CommandException {

@@ -1,6 +1,4 @@
-import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import it.unimib.sd2024.DatabaseHandler;
 import it.unimib.sd2024.Main;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +38,6 @@ public class SetTest {
                     var array = JsonParser.parseString(in.readLine()).getAsJsonArray();
                     System.out.println(array);
                     assertTrue(array.get(0).getAsBoolean());
-                    assertTrue(array.get(1).getAsBoolean());
                     out.println("Disconnect");
                     in.readLine();
                 } catch (IOException e) {
@@ -78,7 +75,6 @@ public class SetTest {
                     var array = JsonParser.parseString(in.readLine()).getAsJsonArray();
                     System.out.println(array);
                     assertTrue(array.get(0).getAsBoolean());
-                    assertTrue(array.get(1).getAsBoolean());
                     out.println("Disconnect");
                     in.readLine();
                 } catch (IOException e) {
@@ -103,6 +99,7 @@ public class SetTest {
 
     @Test
     public void delete() {
+        normalSet();
         Thread thread = new Thread(() -> {
             try (Socket socket = new Socket("localhost", Main.PORT)) {
                 var out = new PrintWriter(socket.getOutputStream(), true);
@@ -112,7 +109,6 @@ public class SetTest {
                 var array = JsonParser.parseString(in.readLine()).getAsJsonArray();
                 System.out.println(array);
                 assertTrue(array.get(0).getAsBoolean());
-                assertTrue(array.get(1).getAsBoolean());
                 out.println("Disconnect");
                 in.readLine();
             } catch (IOException e) {

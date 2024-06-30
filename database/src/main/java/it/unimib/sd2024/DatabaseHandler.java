@@ -11,10 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Class to handle the Database.
  */
 public class DatabaseHandler {
+    /**
+     * The folder where the database files are stored.
+     */
     private static final String folder;
 
+    /**
+     * The locks to synchronize the access to the files.
+     */
     private static final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
 
+    // List of commands
     public static final String SET = "set";
     public static final String GET = "get";
     public static final String GET_IF = "getif";
@@ -23,6 +30,7 @@ public class DatabaseHandler {
     public static final String SET_IF_NOT_EXISTS = "setifnotexists";
     public static final String DISCONNECT = "disconnect";
 
+    // Initialize the Database folder
     static {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
@@ -48,6 +56,15 @@ public class DatabaseHandler {
             throw new IllegalArgumentException("Error: Folder is not writable");
     }
 
+    /**
+     * Handle the request.
+     *
+     * @param collection The collection to handle.
+     * @param operation  The operation to execute.
+     * @return The result of the operation.
+     * @throws CommandException If an error occurs while processing the request.
+     * @throws IOException      If an error occurs while processing the request.
+     */
     public static JsonElement handleRequest(String collection, AbstractDatabaseOperation operation) throws CommandException, IOException {
         Object lock = locks.computeIfAbsent(collection, k -> new Object());
         synchronized (lock) {

@@ -11,6 +11,9 @@ import java.util.List;
 
 import static it.unimib.sd2024.operations.Common.getJsonObjFromPath;
 
+/**
+ * RemoveOperation class to handle the Remove operation.
+ */
 public class RemoveOperation extends AbstractDatabaseOperation {
 
     public RemoveOperation(List<String> keys) {

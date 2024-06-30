@@ -8,6 +8,9 @@ import com.google.gson.JsonPrimitive;
 import java.io.*;
 import java.util.List;
 
+/**
+ * SetOperation class to handle the Set operation.
+ */
 public class SetOperation extends AbstractDatabaseOperation {
     JsonElement document;
 

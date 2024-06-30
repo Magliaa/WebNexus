@@ -3,9 +3,6 @@ package it.unimib.sd2024.debug;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +10,7 @@ public class OrdersGenerator {
     public static Map<String, JsonObject> orders = new HashMap<>();
 
     static {
-        String content;
-        try {
-            content = Files.readString(Paths.get("database/src/main/java/it/unimib/sd2024/debug/Orders"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String content = Orders.orders;
 
         // Parse the content to a JsonArray
         JsonObject jsonObject = JsonParser.parseString(content).getAsJsonObject();

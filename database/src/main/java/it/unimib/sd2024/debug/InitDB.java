@@ -98,7 +98,7 @@ public class InitDB {
                 in.readLine();
                 in.close();
                 out.close();
-                System.out.println("Domains set successfully.");
+                System.out.println("Everything set successfully.");
             } catch (Exception e) {
                 System.err.println("Error while starting the server.");
                 System.exit(1);

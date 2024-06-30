@@ -13,6 +13,9 @@ import java.util.List;
 
 import static it.unimib.sd2024.operations.Common.getJsonObjFromPath;
 
+/**
+ * GetOperation class to handle the Get operation.
+ */
 public class GetOperation extends AbstractDatabaseOperation {
 
     public GetOperation(List<String> keys) {

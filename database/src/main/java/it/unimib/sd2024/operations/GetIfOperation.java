@@ -8,6 +8,9 @@ import java.util.List;
 
 import static it.unimib.sd2024.operations.Common.getJsonObjFromPath;
 
+/**
+ * GetIfOperation class to handle the GetIf operation.
+ */
 public class GetIfOperation extends AbstractDatabaseOperation {
     public final String key_check;
     public final JsonElement value_check;

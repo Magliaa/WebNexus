@@ -9,6 +9,9 @@ import it.unimib.sd2024.CommandException;
 import java.io.*;
 import java.util.List;
 
+/**
+ * SetIfNotExist class to handle the SetIfNotExist operation.
+ */
 public class SetIfNotExist extends AbstractDatabaseOperation {
     JsonElement document;
 

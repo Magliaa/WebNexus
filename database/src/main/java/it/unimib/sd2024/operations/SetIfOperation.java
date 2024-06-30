@@ -8,6 +8,9 @@ import java.util.List;
 
 import static it.unimib.sd2024.operations.Common.getJsonObjFromPath;
 
+/**
+ * SetIfOperation class to handle the SetIf operation.
+ */
 public class SetIfOperation extends AbstractDatabaseOperation {
     public final JsonElement newDocument;
     public final String key_check;

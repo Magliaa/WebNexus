@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Abstract class to represent a Database operation.
+ */
 public abstract class AbstractDatabaseOperation {
     public final List<String> keys;
 
